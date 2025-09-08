@@ -1,13 +1,576 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Düğün Anıları Yükleme</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800&family=Inter:wght@200;300;400;500;600;700&display=swap");
+
+      .playfair {
+        font-family: "Playfair Display", serif;
+      }
+
+      .modern-gradient {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 25%,
+          #f093fb 50%,
+          #f5576c 75%,
+          #4facfe 100%
+        );
+        background-size: 300% 300%;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .glass-morphism {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+          0 0 80px rgba(255, 255, 255, 0.1) inset;
+      }
+
+      .upload-zone {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .upload-zone:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+      }
+
+      .modern-progress {
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        background-size: 200% 200%;
+        animation: progressShine 2s ease infinite;
+      }
+
+      @keyframes progressShine {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .floating-heart {
+        position: absolute;
+        color: rgba(255, 255, 255, 0.1);
+        font-size: 2rem;
+        animation: float 20s linear infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .btn-modern {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .btn-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px -15px rgba(102, 126, 234, 0.4),
+          0 0 30px rgba(255, 255, 255, 0.1) inset;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+
+      .btn-success:hover {
+        box-shadow: 0 20px 40px -15px rgba(17, 153, 142, 0.4),
+          0 0 30px rgba(255, 255, 255, 0.1) inset;
+      }
+
+      .input-modern {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .input-modern:focus {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+      }
+
+      .file-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.3s ease;
+      }
+
+      .file-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+      }
+
+      .status-success {
+        background: linear-gradient(
+          135deg,
+          rgba(17, 153, 142, 0.2),
+          rgba(56, 239, 125, 0.2)
+        );
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(56, 239, 125, 0.3);
+      }
+
+      .status-error {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 87, 108, 0.2),
+          rgba(255, 118, 117, 0.2)
+        );
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(245, 87, 108, 0.3);
+      }
+
+      .scroll-smooth {
+        scroll-behavior: smooth;
+      }
+
+      .main-content {
+        position: relative;
+        z-index: 10;
+      }
+
+      /* Silme (×) tuşu için küçük stil dokunuşu */
+      .delete-btn {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+      .delete-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      function WeddingUploadApp() {
+        const [currentStep, setCurrentStep] = useState(1);
+        const [userName, setUserName] = useState("");
+        const [selectedFiles, setSelectedFiles] = useState([]);
+        const [uploadProgress, setUploadProgress] = useState({});
+        const [isUploading, setIsUploading] = useState(false);
+        const [uploadStatus, setUploadStatus] = useState("");
+        const fileInputRef = useRef(null);
+
+        const API_BASE = "http://localhost:8000";
+
+        const uploadFileChunked = async (file, onProgress) => {
+          const chunkSize = 5 * 1024 * 1024; // 5MB
+          const chunks = Math.ceil(file.size / chunkSize);
+
+          try {
+            const userResponse = await fetch(
+              `${API_BASE}/api/create-user-folder`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userName }),
+              }
+            );
+
+            if (!userResponse.ok) {
+              throw new Error("Kullanıcı klasörü oluşturulamadı");
+            }
+
+            for (let i = 0; i < chunks; i++) {
+              const start = i * chunkSize;
+              const end = Math.min(start + chunkSize, file.size);
+              const chunk = file.slice(start, end);
+
+              const formData = new FormData();
+              formData.append("chunk", chunk);
+              formData.append("fileName", file.name);
+              formData.append("chunkIndex", i);
+              formData.append("totalChunks", chunks);
+              formData.append("userName", userName);
+
+              const response = await fetch(`${API_BASE}/api/upload-chunk`, {
+                method: "POST",
+                body: formData,
+              });
+
+              if (!response.ok) {
+                throw new Error(`Parça ${i + 1} yüklenemedi`);
+              }
+
+              const progress = ((i + 1) / chunks) * 100;
+              onProgress(progress);
+            }
+          } catch (error) {
+            console.error("Yükleme hatası:", error);
+            throw error;
+          }
+        };
+
+        const handleNameSubmit = (e) => {
+          e.preventDefault();
+          if (userName.trim()) {
+            setCurrentStep(2);
+          }
+        };
+
+        const handleFileSelect = (e) => {
+          const files = Array.from(e.target.files);
+          setSelectedFiles(files);
+          setUploadProgress({});
+          setUploadStatus("");
+        };
+
+        // Çarpı (×) ile dosya kaldırma — DÜZELTİLDİ
+        const removeFile = (index) => {
+          setSelectedFiles((prev) => {
+            const removed = prev[index];
+            const next = prev.filter((_, i) => i !== index);
+            // İlerleme durumundan da temizle
+            setUploadProgress((prog) => {
+              const copy = { ...prog };
+              if (removed && removed.name && copy[removed.name] !== undefined) {
+                delete copy[removed.name];
+              }
+              return copy;
+            });
+            return next;
+          });
+        };
+
+        const handleUpload = async () => {
+          if (selectedFiles.length === 0) return;
+
+          setIsUploading(true);
+          setUploadStatus("");
+
+          try {
+            for (const file of selectedFiles) {
+              await uploadFileChunked(file, (progress) => {
+                setUploadProgress((prev) => ({
+                  ...prev,
+                  [file.name]: progress,
+                }));
+              });
+            }
+            setUploadStatus("success");
+          } catch (error) {
+            console.error("Yükleme başarısız:", error);
+            setUploadStatus("error");
+          } finally {
+            setIsUploading(false);
+          }
+        };
+
+        const resetApp = () => {
+          setCurrentStep(1);
+          setUserName("");
+          setSelectedFiles([]);
+          setUploadProgress({});
+          setUploadStatus("");
+          setIsUploading(false);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        };
+
+        const formatFileSize = (bytes) => {
+          if (bytes === 0) return "0 Bayt";
+          const k = 1024;
+          const sizes = ["Bayt", "KB", "MB", "GB"];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return (
+            parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+          );
+        };
+
+        return (
+          <div className="min-h-screen modern-gradient scroll-smooth overflow-hidden">
+            {/* Arka Plan Süsleri */}
+            <div className="floating-elements">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="floating-heart"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 20}s`,
+                    animationDuration: `${20 + Math.random() * 10}s`,
+                  }}
+                >
+                  {
+                    ["💝", "💕", "🌸", "✨", "💖", "🌺"][
+                      Math.floor(Math.random() * 6)
+                    ]
+                  }
+                </div>
+              ))}
+            </div>
+
+            <div className="main-content relative min-h-screen flex flex-col">
+              {/* Başlık */}
+              <div className="text-center py-12 px-4">
+                <div className="max-w-4xl mx-auto">
+                  <h1 className="playfair text-5xl md:text-7xl font-light text-white mb-4 tracking-wide">
+                    Düğün
+                    <span className="block font-semibold bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent">
+                      Anıları
+                    </span>
+                  </h1>
+                  <div className="w-24 h-1 bg-gradient-to-r from-transparent via-white to-transparent mx-auto mb-6 opacity-60"></div>
+                  <p className="text-white/80 text-lg md:text-xl font-light tracking-wide">
+                    En güzel anlarınızı yakalayın ve paylaşın
+                  </p>
+                </div>
+              </div>
+
+              {/* İçerik */}
+              <div className="flex-1 flex items-center justify-center px-6 pb-12">
+                <div className="w-full max-w-lg">
+                  {/* Ad Soyad Adımı */}
+                  {currentStep === 1 && (
+                    <div className="glass-morphism rounded-3xl p-10 shadow-2xl">
+                      <div className="text-center mb-10">
+                        <div className="text-7xl mb-6 animate-pulse">✨</div>
+                        <h2 className="playfair text-3xl font-medium text-white mb-3">
+                          Hoş geldin
+                        </h2>
+                        <p className="text-white/70 text-lg font-light">
+                          Başlamak için adını gir
+                        </p>
+                      </div>
+
+                      <form onSubmit={handleNameSubmit} className="space-y-8">
+                        <div>
+                          <input
+                            type="text"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            placeholder="Adınız Soyadınız"
+                            className="input-modern w-full px-6 py-4 rounded-2xl text-white placeholder-white/60 outline-none text-lg font-light"
+                            required
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="btn-modern w-full text-white font-medium py-4 rounded-2xl text-lg tracking-wide"
+                        >
+                          Devam Et ✨
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* Dosya Yükleme Adımı */}
+                  {currentStep === 2 && (
+                    <div className="glass-morphism rounded-3xl p-8 md:p-10 shadow-2xl">
+                      <div className="text-center mb-8">
+                        <h2 className="playfair text-2xl md:text-3xl font-medium text-white mb-3">
+                          Merhaba, {userName}! 🌟
+                        </h2>
+                        <p className="text-white/70 text-base md:text-lg font-light">
+                          Kıymetli anılarınızı yükleyin
+                        </p>
+                      </div>
+
+                      {/* Dosya Seçim Alanı */}
+                      <div
+                        className="upload-zone rounded-2xl p-10 text-center cursor-pointer mb-8"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <div className="text-6xl mb-6">📷</div>
+                        <p className="text-white font-medium mb-2 text-xl">
+                          Dosyalarınızı Seçin
+                        </p>
+                        <p className="text-white/60 text-sm font-light">
+                          Fotoğraf & Video • Sürükle-Bırak ya da Tıkla
+                        </p>
+                      </div>
+
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*,video/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+
+                      {/* Seçilen Dosyalar */}
+                      {selectedFiles.length > 0 && (
+                        <div className="mb-8">
+                          <h3 className="font-medium text-white mb-4 text-lg">
+                            Seçilen Dosyalar ({selectedFiles.length})
+                          </h3>
+                          <div className="space-y-3 max-h-48 overflow-y-auto">
+                            {selectedFiles.map((file, index) => (
+                              <div
+                                key={index}
+                                className="file-card rounded-xl p-4 relative"
+                              >
+                                <div className="flex justify-between items-center mb-3">
+                                  <span className="text-sm font-medium text-white truncate flex-1 pr-3">
+                                    {file.name}
+                                  </span>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded-full">
+                                      {formatFileSize(file.size)}
+                                    </span>
+                                    {!isUploading && (
+                                      <button
+                                        onClick={() => removeFile(index)}
+                                        className="delete-btn w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                        title="Dosyayı kaldır"
+                                        aria-label="Dosyayı kaldır"
+                                        type="button"
+                                      >
+                                        ×
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {uploadProgress[file.name] && (
+                                  <div className="w-full bg-white/10 rounded-full h-2">
+                                    <div
+                                      className="modern-progress h-2 rounded-full transition-all duration-500"
+                                      style={{
+                                        width: `${uploadProgress[file.name]}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Yükleme Butonları */}
+                      <div className="space-y-4">
+                        <button
+                          onClick={handleUpload}
+                          disabled={selectedFiles.length === 0 || isUploading}
+                          className="btn-success w-full text-white font-medium py-4 rounded-2xl text-lg tracking-wide disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                          {isUploading
+                            ? "⏳ Yükleniyor..."
+                            : "🚀 Dosyaları Yükle"}
+                        </button>
+
+                        <button
+                          onClick={resetApp}
+                          className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-2xl transition-all duration-300 backdrop-blur-sm"
+                        >
+                          🔄 Yeni Kullanıcı
+                        </button>
+                      </div>
+
+                      {/* Durum Mesajları */}
+                      {uploadStatus === "success" && (
+                        <div className="status-success mt-6 px-6 py-4 rounded-2xl">
+                          <div className="flex items-center text-white">
+                            <span className="text-2xl mr-3">🎉</span>
+                            <span className="font-medium">
+                              Tüm dosyalar başarıyla yüklendi!
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {uploadStatus === "error" && (
+                        <div className="status-error mt-6 px-6 py-4 rounded-2xl">
+                          <div className="flex items-center text-white">
+                            <span className="text-2xl mr-3">⚠️</span>
+                            <span className="font-medium">
+                              Yükleme başarısız oldu. Lütfen tekrar deneyin.
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Alt Bilgi */}
+              <div className="text-center py-6 text-white/60 text-sm">
+                <div className="max-w-md mx-auto">
+                  <p className="playfair text-lg font-light">
+                    En güzel anlarınızı ölümsüzleştirin
+                  </p>
+                  <div className="flex items-center justify-center space-x-2 mt-2">
+                    <span>✨</span>
+                    <span>💝</span>
+                    <span>✨</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<WeddingUploadApp />, document.getElementById("root"));
+    </script>
   </body>
 </html>
